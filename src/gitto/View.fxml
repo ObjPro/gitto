@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gitto.ViewController">
+   <children>
+      <TextField fx:id="textField" layoutX="14.0" layoutY="14.0" maxHeight="-Infinity" prefHeight="24.0" prefWidth="580.0" promptText="Path to git-managed directory" text="./" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="10.0" />
+      <TableView fx:id="tableView" layoutX="191.0" layoutY="100.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="44.0">
+        <columns>
+          <TableColumn fx:id="commitIDColumn" prefWidth="200.0" text="ID" />
+          <TableColumn fx:id="messageColumn" prefWidth="300.0" text="Message" />
+        </columns>
+      </TableView>
+      <Button layoutX="527.0" layoutY="10.0" maxHeight="-Infinity" mnemonicParsing="false" onAction="#loadGitFromPath" prefHeight="24.0" prefWidth="80.0" text="Load" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+   </children>
+</AnchorPane>
