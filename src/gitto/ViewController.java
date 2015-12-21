@@ -2,135 +2,77 @@ package gitto;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.file.Paths;
 import java.util.ResourceBundle;
-
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-
-import javafx.scene.control.cell.TreeItemPropertyValueFactory;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
+import javafx.scene.layout.Pane;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Constants;
-import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
 public class ViewController implements Initializable {
 
     @FXML private TextField textField;
+    @FXML private Pane      dropPane;
 
-    // commit log
-    @FXML private TableView<Commit> tableView;
-    @FXML private TableColumn<Commit, String> commitIDColumn;
-    @FXML private TableColumn<Commit, String> messageColumn;
-
-    // file tree
-    @FXML private TreeTableView<File> fileTreeTableView;
-    @FXML private TreeTableColumn<File, String> filenameColumn;
     private Git git;
 
-    private ObservableList<Commit> commits;
-    private void setCommits(List<Commit> commits) {
-        this.commits = FXCollections.observableList(commits);
-        this.tableView.setItems(this.commits);
-    }
-
     @Override public void initialize(URL location, ResourceBundle resources) {
-        this.commitIDColumn.setCellValueFactory(new PropertyValueFactory<>("commitID"));
-        this.messageColumn.setCellValueFactory(new PropertyValueFactory<>("message"));
-        this.filenameColumn.setCellValueFactory((file) -> {
-            return new ReadOnlyObjectWrapper<>(file.getValue().getValue().getName());
+        dropPane.addEventHandler(DragEvent.DRAG_OVER, (DragEvent event) -> {
+            Dragboard db = event.getDragboard();
+            if (db.hasFiles()) {
+                event.acceptTransferModes(TransferMode.ANY);
+            }
+            event.consume();
         });
-        try {
-            this.loadFromPath("./");
-        } catch (Exception error) {
-            error.printStackTrace();
-        }
+
+        dropPane.addEventHandler(DragEvent.DRAG_DROPPED, (DragEvent event) -> {
+            Dragboard db = event.getDragboard();
+            db.getFiles().stream().findFirst().ifPresent((File file) -> {
+                String filePath = file.toString();
+                if (this.git == null) {
+                    loadGitFromPath(filePath);
+                }
+                addFile(file);
+            });
+            event.setDropCompleted(true);
+        });
     }
 
-    private void loadFromPath(String location) throws Exception {
+    private void loadGitFromPath(String location) {
+        File file = new File(location);
+        File dir = file.isDirectory() ? file : file.getParentFile();
+
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
-        File gitDir = new File(location + Constants.DOT_GIT);
-        Repository repository = builder.setGitDir(gitDir).readEnvironment().findGitDir().build();
-        this.git = new Git(repository);
+        File gitPath = Paths.get(dir.getPath(), Constants.DOT_GIT).toFile();
+        builder.findGitDir(gitPath);
 
-        Integer count = 10;
-        ObjectId head = repository.resolve(Constants.HEAD);
-        Iterable<RevCommit> revCommits = git.log().add(head).setMaxCount(count).call();
-        List<Commit> commits = new ArrayList<>();
-        for (RevCommit revCommit: revCommits) {
-            Commit commit = new Commit();
-            commit.setCommitID(revCommit.getId().toString());
-            commit.setMessage(revCommit.getFullMessage());
-            commits.add(commit);
-        }
-        this.setCommits(commits);
+        System.out.println(gitPath.getAbsolutePath());
 
-        this.fileTreeTableView.setRoot(createNode(gitDir));
-    }
-
-    @FXML private void loadButtonDidPress(ActionEvent event) {
-        String path = this.textField.getText();
-        System.out.println(path);
+        Repository repository;
         try {
-            this.loadFromPath(path);
-        } catch (Exception error) {
-            error.printStackTrace();
+            if (builder.getGitDir() == null) { // .gitがみつからない
+                repository = FileRepositoryBuilder.create(gitPath);
+            } else { // .gitがみつかった
+                repository = builder.build();
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return;
         }
+
+        this.textField.setText(repository.getDirectory().getParent());
+        this.git = new Git(repository);
     }
 
-    // utility function to build file tree
-    // https://gist.github.com/james-d/11177668
-
-    private TreeItem<File> createNode(final File f) {
-        return new TreeItem<File>(f) {
-            private boolean isLeaf;
-            private boolean isFirstTimeChildren = true;
-            private boolean isFirstTimeLeaf = true;
-
-            @Override
-            public ObservableList<TreeItem<File>> getChildren() {
-                if (isFirstTimeChildren) {
-                    isFirstTimeChildren = false;
-                    super.getChildren().setAll(buildChildren(this));
-                }
-                return super.getChildren();
-            }
-
-            @Override
-            public boolean isLeaf() {
-                if (isFirstTimeLeaf) {
-                    isFirstTimeLeaf = false;
-                    File f = getValue();
-                    isLeaf = f.isFile();
-                }
-                return isLeaf;
-            }
-        };
-    }
-
-    private ObservableList<TreeItem<File>> buildChildren(TreeItem<File> TreeItem) {
-        File f = TreeItem.getValue();
-        if (f == null || !f.isDirectory()) {
-            return FXCollections.emptyObservableList();
-        }
-        File[] files = f.listFiles();
-        if (files == null) {
-            return FXCollections.emptyObservableList();
-        }
-        ObservableList<TreeItem<File>> children = FXCollections.observableArrayList();
-        for (File childFile: files) {
-            children.add(createNode(childFile));
-        }
-        return children;
+    private void addFile(File file) {
+        // TODO: implementation
     }
 
 }
