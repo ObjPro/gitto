@@ -36,10 +36,11 @@ public class ViewController implements Initializable {
         dropPane.addEventHandler(DragEvent.DRAG_DROPPED, (DragEvent event) -> {
             Dragboard db = event.getDragboard();
             db.getFiles().stream().findFirst().ifPresent((File file) -> {
+                //初期化
+                this.git = null;
+
                 String filePath = file.toString();
-                if (this.git == null) {
-                    loadGitFromPath(filePath);
-                }
+                loadGitFromPath(filePath);
                 addAllAndCommit();
                 //addFile(file);
             });
