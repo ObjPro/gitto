@@ -15,6 +15,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.eclipse.jgit.api.errors.GitAPIException;
 
 public class ViewController implements Initializable {
 
@@ -39,7 +40,8 @@ public class ViewController implements Initializable {
                 if (this.git == null) {
                     loadGitFromPath(filePath);
                 }
-                addFile(file);
+                addAllAndCommit();
+                //addFile(file);
             });
             event.setDropCompleted(true);
         });
@@ -59,20 +61,34 @@ public class ViewController implements Initializable {
         try {
             if (builder.getGitDir() == null) { // .gitがみつからない
                 repository = FileRepositoryBuilder.create(gitPath);
+                this.git = new Git(repository);
+                // git init
+                this.git.init().setDirectory(file).setBare(false).call();
             } else { // .gitがみつかった
                 repository = builder.build();
+                this.git = new Git(repository);
             }
         } catch (Exception exception) {
             exception.printStackTrace();
             return;
         }
-
         this.textField.setText(repository.getDirectory().getParent());
-        this.git = new Git(repository);
     }
 
     private void addFile(File file) {
         // TODO: implementation
+    }
+
+    private void addAllAndCommit() {
+        try {
+            //git add --all || git commit
+            this.git.add().addFilepattern(".").call();
+            this.git.commit().setMessage("Commit all changes including additions").call();
+            System.out.println("Committed all changes to repository");
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return;
+        }
     }
 
 }
