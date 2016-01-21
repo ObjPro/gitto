@@ -1,9 +1,12 @@
 package gitto;
 
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ResourceBundle;
+
+import com.sun.javafx.scene.accessibility.Action;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -26,6 +29,12 @@ public class ViewController implements Initializable {
     @FXML private Pane      dropPane;
 
     private Git git;
+
+    @FXML
+    private void commitButtonDidPush() {
+        // TODO: implementation
+        System.out.println("commit");
+    }
 
     @Override public void initialize(URL location, ResourceBundle resources) {
         dropPane.addEventHandler(DragEvent.DRAG_OVER, (DragEvent event) -> {
