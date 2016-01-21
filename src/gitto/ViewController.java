@@ -16,6 +16,8 @@ import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.util.SystemReader;
+
 import java.util.Date;
 
 public class ViewController implements Initializable {
@@ -45,6 +47,8 @@ public class ViewController implements Initializable {
     }
 
     private void loadGit(File file) {
+        System.out.println("DnD:" + file.getAbsolutePath());
+
         // .gitのあるディレクトリ
         File dir = file.isDirectory() ? file : file.getParentFile();
 
@@ -84,10 +88,20 @@ public class ViewController implements Initializable {
         }
     }
 
-    private void addFile(File dir) {
+    private void addFile(File file) {
         try {
-            this.git.add().addFilepattern(dir.getAbsolutePath()).call();
-            System.out.println("git add "+ dir);
+            // .gitのあるディレクトリからの相対パスを生成
+            String Path;
+            if (file.isFile()){
+                Path = file.getAbsolutePath().replaceAll(this.git.getRepository().getDirectory().getParent()+"/","");
+            }else if(file.getAbsolutePath().equals(this.git.getRepository().getDirectory().getParent())){// カレントディレクトリ
+                Path = ".";
+            }else{ // file.isDirectory() == true
+                Path = file.getAbsolutePath().replaceAll(this.git.getRepository().getDirectory().getParent(),"");
+            }
+            System.out.println("git add " + Path);
+            this.git.add().addFilepattern(Path).call();
+
         } catch (Exception exception) {
             exception.printStackTrace();
             return;
