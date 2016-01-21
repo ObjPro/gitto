@@ -11,6 +11,7 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Pane;
+import javafx.scene.web.WebView;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
@@ -24,6 +25,7 @@ public class ViewController implements Initializable {
 
     @FXML private TextField textField;
     @FXML private Pane      dropPane;
+    @FXML private WebView   webView;
 
     private Git git;
 
