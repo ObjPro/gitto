@@ -16,6 +16,7 @@ import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import java.util.Date;
 
 public class ViewController implements Initializable {
 
@@ -36,60 +37,71 @@ public class ViewController implements Initializable {
         dropPane.addEventHandler(DragEvent.DRAG_DROPPED, (DragEvent event) -> {
             Dragboard db = event.getDragboard();
             db.getFiles().stream().findFirst().ifPresent((File file) -> {
-                //初期化
-                this.git = null;
-
-                String filePath = file.toString();
-                loadGitFromPath(filePath);
-                addAllAndCommit();
-                //addFile(file);
+                loadGit(file);
+                addFile(file);
             });
             event.setDropCompleted(true);
         });
     }
 
-    private void loadGitFromPath(String location) {
-        File file = new File(location);
+    private void loadGit(File file) {
+        // .gitのあるディレクトリ
         File dir = file.isDirectory() ? file : file.getParentFile();
 
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
+
+        // .gitのパス
         File gitPath = Paths.get(dir.getPath(), Constants.DOT_GIT).toFile();
         builder.findGitDir(gitPath);
 
         System.out.println(gitPath.getAbsolutePath());
 
-        Repository repository;
         try {
-            if (builder.getGitDir() == null) { // .gitがみつからない
-                repository = FileRepositoryBuilder.create(gitPath);
-                this.git = new Git(repository);
-                // git init
-                this.git.init().setDirectory(file).setBare(false).call();
-            } else { // .gitがみつかった
-                repository = builder.build();
-                this.git = new Git(repository);
+            if (builder.getGitDir() == null) { // .gitがない
+                this.git = new Git(FileRepositoryBuilder.create(gitPath));
+                gitInit(dir);
+            } else { // .gitがある
+                this.git = new Git(builder.build());
             }
         } catch (Exception exception) {
             exception.printStackTrace();
             return;
         }
-        this.textField.setText(repository.getDirectory().getParent());
+        this.textField.setText(dir.getPath());
     }
 
-    private void addFile(File file) {
-        // TODO: implementation
+    private void initTargetGit(){
+        this.git = null;
     }
 
-    private void addAllAndCommit() {
+    private void gitInit(File dir){
         try {
-            //git add --all || git commit
-            this.git.add().addFilepattern(".").call();
-            this.git.commit().setMessage("Commit all changes including additions").call();
-            System.out.println("Committed all changes to repository");
+            this.git.init().setDirectory(dir).setBare(false).call();
+            System.out.println("git init");
         } catch (Exception exception) {
             exception.printStackTrace();
             return;
         }
     }
 
+    private void addFile(File dir) {
+        try {
+            this.git.add().addFilepattern(dir.getAbsolutePath()).call();
+            System.out.println("git add "+ dir);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return;
+        }
+    }
+
+    private void commitGit(){
+        try{
+            String commitMessage = new Date().toString();
+            this.git.commit().setMessage(commitMessage).call();
+            System.out.println("git commit -m "+ commitMessage);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return;
+        }
+    }
 }
