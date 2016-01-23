@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -14,6 +15,11 @@
                   <Font size="16.0" />
                </font>
             </Label>
+            <StackPane alignment="BOTTOM_CENTER" layoutX="390.0" layoutY="295.0" prefHeight="150.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#commitButtonDidPush" text="爆破" />
+               </children>
+            </StackPane>
          </children>
       </AnchorPane>
    </children>
