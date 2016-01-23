@@ -6,7 +6,6 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ResourceBundle;
 
-import com.sun.javafx.scene.accessibility.Action;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -32,8 +31,7 @@ public class ViewController implements Initializable {
 
     @FXML
     private void commitButtonDidPush() {
-        // TODO: implementation
-        System.out.println("commit");
+        commitGit();
     }
 
     @Override public void initialize(URL location, ResourceBundle resources) {
