@@ -1,26 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="400.0" prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gitto.ViewController">
    <children>
-      <TextField fx:id="textField" layoutX="14.0" layoutY="14.0" maxHeight="-Infinity" prefHeight="24.0" prefWidth="580.0" promptText="Path to git-managed directory" text="./" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
-      <AnchorPane fx:id="dropPane" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0">
+      <TextField fx:id="textField" layoutX="14.0" layoutY="14.0" maxHeight="-Infinity" prefHeight="24.0" prefWidth="580.0" promptText="Path to git-managed directory" text="./" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="70.0" AnchorPane.topAnchor="10.0" />
+      <AnchorPane fx:id="dropPane" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0">
          <children>
             <Label alignment="CENTER" layoutX="131.0" layoutY="110.0" text="Drop here" textFill="#999999" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <font>
                   <Font size="16.0" />
                </font>
             </Label>
-            <StackPane alignment="BOTTOM_CENTER" layoutX="390.0" layoutY="295.0" prefHeight="150.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-               <children>
-                  <Button mnemonicParsing="false" onAction="#commitButtonDidPush" text="爆破" />
-               </children>
-            </StackPane>
          </children>
       </AnchorPane>
+      <Button layoutX="931.0" layoutY="10.0" mnemonicParsing="false" onAction="#commitButtonDidPush" text=" 爆破" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+      <ListView fx:id="commandListView" layoutX="378.0" layoutY="629.0" prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
    </children>
 </AnchorPane>
