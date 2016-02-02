@@ -16,16 +16,17 @@ public class ViewController implements Initializable {
 
     @FXML private TextField textField;
     @FXML private Pane      dropPane;
+    @FXML private ListView<String>  commandListView;
 
     private GitController controller;
 
-    @FXML
-    private void commitButtonDidPush() {
+    @FXML private void commitButtonDidPush() {
         controller.commit();
     }
 
     @Override public void initialize(URL location, ResourceBundle resources) {
         controller = GitController.sharedController();
+        commandListView.setItems(controller.commands);
 
         dropPane.addEventHandler(DragEvent.DRAG_OVER, (DragEvent event) -> {
             Dragboard db = event.getDragboard();
